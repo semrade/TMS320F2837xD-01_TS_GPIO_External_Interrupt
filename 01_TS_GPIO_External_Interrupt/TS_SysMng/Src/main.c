@@ -101,10 +101,11 @@ main (void)
     /* Init External Interrupt */
     Xint5PinConfig();
 
-
+    /* Peripheral Interrupt Expansion (PIE) */
     /* Enable XINT5 in the PIE: Group 12 __interrupt 3 */
     PieCtrlRegs.PIEIER12.bit.INTx3 = 1;
 
+    /* Core Interrupt Logic */
     /* Enable group 12 interrupts */
     IER |= M_INT12;
 
@@ -141,7 +142,7 @@ GpioLedInit(void)
 
     /* GPIO Configuration for interrupt routine */
     GPIO_SetupPinMux(GPIO_INT_PIN,GPIO_MUX_CPU1,0);
-    GPIO_SetupPinOptions(GPIO_INT_PIN, GPIO_INPUT, GPIO_ASYNC);
+    GPIO_SetupPinOptions(GPIO_INT_PIN, GPIO_INPUT, GPIO_OPENDRAIN|GPIO_PULLUP|GPIO_QUAL6|GPIO_SYNC);
 
 }
 /**********************************************************************************
@@ -156,7 +157,7 @@ XbarPinConfig(void)
     /* Activate Write protection EALLOW */
     EALLOW;
 
-    /* GPIO pin routing to interrupt PIE */
+    /* GPIO 2 pin routing to interrupt PIE */
     InputXbarRegs.INPUT14SELECT = GPIO_INT_PIN;
 
     /* Disable write protection EALLOW */
@@ -193,14 +194,17 @@ Xint5PinConfig(void)
 interrupt void
 Xint5_ISR(void)
 {
-    /* Must acknowledge the PIE group 12 to get more interrupts */
-    PieCtrlRegs.PIEACK.all = PIEACK_GROUP12;
+    /* Clear Flag */
+    PieCtrlRegs.PIEIFR12.bit.INTx5 = 1;
 
-    /* Toggle bleu led and wait 500ms */
+    /* Toggle blue led and wait 500ms */
     GPIO_togglePin(BLEU_LED);
     DELAY_US(500*1000);
 
     /* Toggle red led and wait 500ms */
     GPIO_togglePin(RED_LED);
     DELAY_US(500*1000);
+
+    /* Must acknowledge the PIE group 12 to get more interrupts */
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP12;
 }
