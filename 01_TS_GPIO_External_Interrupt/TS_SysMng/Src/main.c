@@ -52,15 +52,13 @@
 #define RED_LED         DEVICE_GPIO_PIN_LED2
 #define GPIO_INT_PIN    2U
 
-
 /**********************************************************************************
  * \function:       main
  * \brief           main `0` numbers
  * \param[in]       void
  * \return          void
  **********************************************************************************/
-void
-main (void)
+void main(void)
 {
 
     /* Set up system flash and turn peripheral clocks */
@@ -116,7 +114,7 @@ main (void)
     ERTM;
 
     /* Infinite led loop */
-    while(1)
+    while (1)
     {
         asm(" NOP");
     }
@@ -128,21 +126,21 @@ main (void)
  * \param[in]       void
  * \return          void
  **********************************************************************************/
-void
-GpioLedInit(void)
+void GpioLedInit(void)
 {
 
     /* GPIO bleuLed configuration using TI function */
-    GPIO_SetupPinMux(BLEU_LED,GPIO_MUX_CPU1,0);
+    GPIO_SetupPinMux(BLEU_LED, GPIO_MUX_CPU1, 0);
     GPIO_SetupPinOptions(BLEU_LED, GPIO_OUTPUT, GPIO_ASYNC);
 
     /* GPIO RedLed configuration using TI function */
-    GPIO_SetupPinMux(RED_LED,GPIO_MUX_CPU1,0);
+    GPIO_SetupPinMux(RED_LED, GPIO_MUX_CPU1, 0);
     GPIO_SetupPinOptions(RED_LED, GPIO_OUTPUT, GPIO_ASYNC);
 
     /* GPIO Configuration for interrupt routine */
-    GPIO_SetupPinMux(GPIO_INT_PIN,GPIO_MUX_CPU1,0);
-    GPIO_SetupPinOptions(GPIO_INT_PIN, GPIO_INPUT, GPIO_OPENDRAIN|GPIO_PULLUP|GPIO_QUAL6|GPIO_SYNC);
+    GPIO_SetupPinMux(GPIO_INT_PIN, GPIO_MUX_CPU1, 0);
+    GPIO_SetupPinOptions(GPIO_INT_PIN, GPIO_INPUT,
+    GPIO_OPENDRAIN | GPIO_PULLUP | GPIO_QUAL6 | GPIO_SYNC);
 
 }
 /**********************************************************************************
@@ -151,8 +149,7 @@ GpioLedInit(void)
  * \param[in]       void
  * \return          void
  **********************************************************************************/
-void
-XbarPinConfig(void)
+void XbarPinConfig(void)
 {
     /* Activate Write protection EALLOW */
     EALLOW;
@@ -169,8 +166,7 @@ XbarPinConfig(void)
  * \param[in]       void
  * \return          void
  **********************************************************************************/
-void
-Xint5PinConfig(void)
+void Xint5PinConfig(void)
 {
     /* Enable EALLOW protected register access */
     EALLOW;
@@ -191,8 +187,7 @@ Xint5PinConfig(void)
  * \param[in]       void
  * \return          void
  **********************************************************************************/
-interrupt void
-Xint5_ISR(void)
+interrupt void Xint5_ISR(void)
 {
     /* Clear Flag */
     PieCtrlRegs.PIEIFR12.bit.INTx5 = 1;
